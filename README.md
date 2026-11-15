@@ -40,12 +40,12 @@ pkg install python
 cd QuickDock
 python main.py --cli
 ```
-Termux CLI mode uses only the Python standard library. A regular Termux session does not provide the desktop environment expected by PySide6, so Android GUI is not included in this release.
+Termux mode uses Python standard-library components. Start the interactive TUI with `python main.py --tui`; the simpler text CLI remains available with `python main.py --cli`. The TUI supports keyboard navigation and terminal mouse events (tap support depends on whether the terminal app forwards mouse events). A regular Termux session does not provide the desktop environment expected by PySide6, so Android GUI is not included in this release.
 
 ## Run
 ```bash
 python main.py          # desktop GUI
-python main.py --cli    # terminal interface
+python main.py --tui    # interactive terminal UI (recommended)\npython main.py --cli    # basic terminal interface
 python main.py --lang ru
 python main.py --lang en --cli
 ```
