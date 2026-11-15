@@ -115,7 +115,8 @@ class QuickDockTUI:
                 attr = curses.A_REVERSE | curses.A_BOLD if start + offset == self.selected else curses.A_NORMAL
                 self.safe_add(y, 2, line, attr, w - 4)
         self.safe_add(h - 3, 2, self.status, curses.A_DIM, w - 4)
-        self.safe_add(h - 2, 2, self.t("keys"), curses.A_BOLD, w - 4)
+        self.safe_add(h - 2, 2, "[ RUN ] [ ADD ] [ EDIT ] [ DEL ] [ ★ ] [ SEARCH ] [ HISTORY ]", curses.A_REVERSE, w - 4)
+        self.safe_add(h - 1, 2, self.t("keys"), curses.A_BOLD, w - 4)
         self.s.refresh()
 
     def selected_entry(self):
@@ -176,10 +177,22 @@ class QuickDockTUI:
             return
         if my in self.row_to_entry:
             self.selected = self.row_to_entry[my]
-            if state & getattr(curses, "BUTTON1_DOUBLE_CLICKED", 0):
+            if state & (getattr(curses, "BUTTON1_CLICKED", 0) | getattr(curses, "BUTTON1_DOUBLE_CLICKED", 0)):
                 self.run_selected()
-            elif state & getattr(curses, "BUTTON1_CLICKED", 0):
-                self.status = self.entries[self.selected].name
+        elif my == self.s.getmaxyx()[0] - 2:
+            if 2 <= mx < 10: self.run_selected()
+            elif 11 <= mx < 19: self.add_or_edit()
+            elif 20 <= mx < 28 and self.selected_entry(): self.add_or_edit(self.selected_entry())
+            elif 29 <= mx < 37 and self.selected_entry():
+                entry = self.selected_entry()
+                if self.prompt(self.t("confirm"), "n").lower() == "y":
+                    self.storage.delete_entry(entry.id); self.status = self.t("deleted"); self.refresh_entries()
+            elif 38 <= mx < 45 and self.selected_entry():
+                entry = self.selected_entry(); entry.favorite = not entry.favorite
+                self.storage.save_entry(entry); self.status = self.t("fav_done"); self.refresh_entries()
+            elif 46 <= mx < 58:
+                self.filter = self.prompt(self.t("filter"), self.filter); self.selected = 0; self.refresh_entries()
+            elif mx >= 59: self.show_history()
 
     def loop(self):
         curses.curs_set(0)
