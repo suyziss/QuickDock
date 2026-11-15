@@ -61,7 +61,7 @@ class QuickDockTUI:
             value = str(value)
             if width is not None:
                 value = value[:max(0, width)]
-            self.s.addnstr(y, x, value, max(0, width if width is not None else curses.COLS - x - 1), attr)
+            self.s.addnstr(y, x, value, max(0, width if width is not None else self.s.getmaxyx()[1] - x - 1), attr)
         except curses.error:
             pass
 
