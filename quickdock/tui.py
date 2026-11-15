@@ -144,10 +144,10 @@ class QuickDockTUI:
         except Exception as exc:
             self.message(self.t("invalid") + str(exc))
 
-    def run_selected(self):
+    def run_selected(self, confirm=True):
         entry = self.selected_entry()
         if not entry: return
-        if self.prompt(self.t("run_confirm"), "y").lower() != "y": return
+        if confirm and self.prompt(self.t("run_confirm"), "y").lower() != "y": return
         process, result = launch(entry)
         if process:
             self.storage.add_history(entry.name, None)
@@ -178,9 +178,9 @@ class QuickDockTUI:
         if my in self.row_to_entry:
             self.selected = self.row_to_entry[my]
             if state & (getattr(curses, "BUTTON1_CLICKED", 0) | getattr(curses, "BUTTON1_DOUBLE_CLICKED", 0)):
-                self.run_selected()
+                self.run_selected(confirm=False)
         elif my == self.s.getmaxyx()[0] - 2:
-            if 2 <= mx < 10: self.run_selected()
+            if 2 <= mx < 10: self.run_selected(confirm=False)
             elif 11 <= mx < 19: self.add_or_edit()
             elif 20 <= mx < 28 and self.selected_entry(): self.add_or_edit(self.selected_entry())
             elif 29 <= mx < 37 and self.selected_entry():
