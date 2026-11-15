@@ -5,11 +5,16 @@ from quickdock.core.storage import Storage
 
 def main():
     parser = argparse.ArgumentParser(description="QuickDock launcher")
-    parser.add_argument("--cli", action="store_true", help="Use terminal interface")
+    parser.add_argument("--cli", action="store_true", help="Use basic terminal interface")
+    parser.add_argument("--tui", action="store_true", help="Use interactive terminal interface")
     parser.add_argument("--lang", choices=("en", "ru"), default=None)
     args = parser.parse_args()
     set_language(args.lang)
     storage = Storage()
+    if args.tui:
+        from quickdock.tui import run_tui
+        run_tui(storage, args.lang or "en")
+        return
     if args.cli:
         from quickdock.cli import run_cli
         run_cli(storage)
